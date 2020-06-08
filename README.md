@@ -14,7 +14,7 @@
 Dados estatísticos e gráficos referentes às amostras obtidas (média das amostras segue distribuição normal)
 
 ### Definições do sistema:
-1. M_DIA: São analisados 360 minutos de operação dos elevadores por dia;
+1. M_DIA: São analisados 360 minutos (6h) de operação dos elevadores por dia;
 2. DIA: São pegas 100 amostras diárias por simulação;
 3. T: Tempo total de simulação (36000 minutos);
 4. INFINITO: O valor de infinito eh definido como 99999.9;
