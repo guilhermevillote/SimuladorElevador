@@ -1,5 +1,5 @@
-# SimuladorElevador
-##Simulador de operação de um grupo de elevadores em um Hotel com 60 andares.
+# Simulador Elevador
+## Simulador de operação de um grupo de elevadores em um Hotel com 60 andares.
 
 Nota: No início de cada dia dentro da simulação, as filas de todos os andares, inclusive do térreo, são zeradas e os elevadores são levados para o térreo, ficando de portas abertas esperando que cheguem hóspedes pelo térreo ou que algum hóspede que já está num andar peça para descer. 
 
