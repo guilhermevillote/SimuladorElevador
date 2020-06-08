@@ -13,7 +13,7 @@ LAMBDA = 1.5 #DEVE SER DO TIPO FLOAT
 #############################      DEFINICOES      ##################################
 #####################################################################################
 M_DIA = 360 # 6 HORAS
-DIA = 100
+DIA = 10
 T = DIA * M_DIA
 N_ANDARES = 60
 INFINITO = 99999.9
@@ -67,7 +67,6 @@ def obter_tempo(andares_elevador, andar):
 def main():
 
     #VARIAVEIS UTILIZADAS PARA CALCULAR AS VARIAVEIS DE INTERESE DA SIMULACAO
-    FILA_DIA = [[]for _ in range(DIA+1)]
     NA_DIA = [[]for _ in range(DIA+1)]
     ND_DIA = [[]for _ in range(DIA+1)]
     NB = [[] for _ in range(N_ANDARES)] 
@@ -79,9 +78,9 @@ def main():
     ctrl_elevador = [0]*(N_ELEVADORES)
     andares = np.zeros((N_ELEVADORES, N_ANDARES), dtype = int)
     atendimento_andares = [-1]*(N_ANDARES)
-    temp_viag = [INFINITO]*(N_ELEVADORES)
-    temp_volta = [INFINITO]*(N_ELEVADORES)
-    temp_andar = [INFINITO]*(N_ELEVADORES)
+    tempo_subir = [INFINITO]*(N_ELEVADORES)
+    tempo_terreo = [INFINITO]*(N_ELEVADORES)
+    tempo_andar = [INFINITO]*(N_ELEVADORES)
     td = INFINITO
     lista_td = []
     tc = prox_t(0.0)
@@ -104,9 +103,9 @@ def main():
             ctrl_elevador = [0]*(N_ELEVADORES)
             andares = np.zeros((N_ELEVADORES, N_ANDARES), dtype = int)
             atendimento_andares = [-1]*(N_ANDARES)
-            temp_viag = [INFINITO]*(N_ELEVADORES)
-            temp_volta = [INFINITO]*(N_ELEVADORES)
-            temp_andar = [INFINITO]*(N_ELEVADORES)
+            tempo_subir = [INFINITO]*(N_ELEVADORES)
+            tempo_terreo = [INFINITO]*(N_ELEVADORES)
+            tempo_andar = [INFINITO]*(N_ELEVADORES)
             n_fila = 0
             #zerar pessoas na fila de cada andar
             for i in range(N_ANDARES):
@@ -115,7 +114,7 @@ def main():
                         NF[i].append(t)
 
 ##### CASO 1: CHEGA UM PASSAGEIRO NA FILA #####
-        if((tc <= min(temp_viag)) and (tc <= min(temp_volta)) and (tc <= min(temp_andar)) and (tc <= td)): 
+        if((tc <= min(tempo_subir)) and (tc <= min(tempo_terreo)) and (tc <= min(tempo_andar)) and (tc <= td)): 
             andar = escolher_andar()
             t = tc
             NA_DIA[int(t/M_DIA)].append(t)
@@ -127,11 +126,9 @@ def main():
                     i = j
                     break
             if( statement ): #TEM ELEVADOR NO SOLO
-                #Ne[i] += 1
-                FILA_DIA[ int(t/M_DIA) ].append( t - NA_DIA[int(t/M_DIA)][len(ND_DIA[int(t/M_DIA)])] )
                 ND_DIA[int(t/M_DIA)].append(t)
                 andares[i][andar-1] += 1
-                temp_viag[i] = t +2*T_PORTA +T_PESSOA + obter_tempo(andares[i], -1) #ABRIR, ENTRAR, FECHAR, SUBIR, ABRIR
+                tempo_subir[i] = t +2*T_PORTA +T_PESSOA + obter_tempo(andares[i], -1) #ABRIR, ENTRAR, FECHAR, SUBIR, ABRIR
                 tempo_descer = t  + 2*T_PORTA + T_PESSOA + obter_tempo(andares[i], andar) + prox_t_descer()
                 NB[andar-1].append(tempo_descer) #VERIFICAR TEMPO
                 if(tempo_descer < td):
@@ -146,10 +143,10 @@ def main():
                 lotacao_elevador_subir[i][int(t/M_DIA)].append(1)
 
             else: #NAO TEM ELEVADOR NO SOLO
-                if(min(temp_volta) == INFINITO and max(temp_viag) == INFINITO ): #NAO TEM NENHUM ELEVADOR VINDO MAS TEM ALGUM QUE JA TERMINOU A VIAGEM
+                if(min(tempo_terreo) == INFINITO and max(tempo_subir) == INFINITO ): #NAO TEM NENHUM ELEVADOR VINDO MAS TEM ALGUM QUE JA TERMINOU A VIAGEM
                     ultimos = []
                     for i in range(N_ELEVADORES):
-                        if(temp_viag[i] == INFINITO and temp_andar[i] == INFINITO): #ELEVADOR PARADO
+                        if(tempo_subir[i] == INFINITO and tempo_andar[i] == INFINITO): #ELEVADOR PARADO
                             ultimo_andar = np.max(np.nonzero(andares[i]))
                             ultimos.append(ultimo_andar)
                         else: #ELEVADOR PEGANDO PASSAGEIROS PARA DESCER
@@ -162,17 +159,17 @@ def main():
                             break
                     if( a < INFINITO ): #EXISTE ELEVADOR PARADO
                         ultimo_andar = np.max(np.nonzero(andares[indice]))
-                        temp_volta[indice] = t + (ultimo_andar+1)*T_ANDAR + T_PORTA
+                        tempo_terreo[indice] = t + (ultimo_andar+1)*T_ANDAR + T_PORTA
                 tc = prox_t(t)
                 n_fila = n_fila + 1
                 i_fila[int(t/M_DIA)].append([t, n_fila])
                 
 ##### CASO 2: UM ELEVADOR TERMINOU A SUA VIAGEM #####
-        elif((min(temp_viag) <= tc) and (min(temp_viag) <= min(temp_volta)) and (min(temp_viag) <= min(temp_andar)) and (min(temp_viag) <= td)):
-            elevador = np.argmin(temp_viag)
+        elif((min(tempo_subir) <= tc) and (min(tempo_subir) <= min(tempo_terreo)) and (min(tempo_subir) <= min(tempo_andar)) and (min(tempo_subir) <= td)):
+            elevador = np.argmin(tempo_subir)
             ultimo_andar = np.max(np.nonzero(andares[elevador]))
-            t = temp_viag[elevador]
-            temp_viag[elevador] = INFINITO
+            t = tempo_subir[elevador]
+            tempo_subir[elevador] = INFINITO
             andar = -1
             for i in range(N_ANDARES-1, -1, -1): # i VAI DO N_ANDARES-1 ate o 0
                 if(atendimento_andares[i] == 0):
@@ -182,7 +179,7 @@ def main():
                 if(atendimento_andares[ultimo_andar] == 0):
                     if(andar == ultimo_andar ):
                         atendimento_andares[andar] = elevador + 1
-                        temp_andar[elevador] = t
+                        tempo_andar[elevador] = t
                     else:
                         contador = 0
                         for i in range(len(NF[ultimo_andar]), len(NB[ultimo_andar]), +1): #i comeca em andar-2 e vai ate 0
@@ -207,22 +204,22 @@ def main():
                             dif = maior_andar - ultimo_andar
                         elif(maior_andar < ultimo_andar):
                             dif = ultimo_andar - maior_andar
-                        temp_andar[elevador] = t + controle*T_PESSOA + T_PORTA + dif*T_ANDAR + T_PORTA   #7seg por andar mais 5seg para abrir a porta ate o maior andar
+                        tempo_andar[elevador] = t + controle*T_PESSOA + T_PORTA + dif*T_ANDAR + T_PORTA   #7seg por andar mais 5seg para abrir a porta ate o maior andar
                 else:
                     dif = -1
                     dif = andar - ultimo_andar
                     if ( dif < 0):
                         dif = - dif
-                    temp_andar[elevador] = t + T_PORTA + T_ANDAR*dif + T_PORTA
+                    tempo_andar[elevador] = t + T_PORTA + T_ANDAR*dif + T_PORTA
                     atendimento_andares[andar] = elevador + 1
             elif(n_fila > 0): #TEM ALGUEM NA FILA (BOTAO APERTADO)                             '
-                temp_volta[elevador] = t + T_PORTA + (ultimo_andar+1)*T_ANDAR + T_PORTA
+                tempo_terreo[elevador] = t + T_PORTA + (ultimo_andar+1)*T_ANDAR + T_PORTA
 ##### CASO 3: UM ELEVADOR CHEGA NO TERREO #####
-        elif((min(temp_volta) <= tc) and (min(temp_volta) <= min(temp_viag)) and (min(temp_volta) <= min(temp_andar)) and (min(temp_volta) <= td)):
+        elif((min(tempo_terreo) <= tc) and (min(tempo_terreo) <= min(tempo_subir)) and (min(tempo_terreo) <= min(tempo_andar)) and (min(tempo_terreo) <= td)):
             if(n_fila>0): #TEM ALGUEM NA FILA
-                elevador = np.argmin(temp_volta)
-                t = temp_volta[elevador]
-                temp_volta[elevador] = INFINITO
+                elevador = np.argmin(tempo_terreo)
+                t = tempo_terreo[elevador]
+                tempo_terreo[elevador] = INFINITO
                 ctrl_elevador[elevador] = 0
                 for k  in range (N_ANDARES):
                     andares[elevador][k] = 0
@@ -236,7 +233,6 @@ def main():
                         i_fila[int(t/M_DIA)].append([t_aux, n_fila-(i+1)]) #sai da fila qnd chega sua hora de entrar no elevador
                         t_aux = t_aux + T_PESSOA
                         if( len(NA_DIA[int(t_aux/M_DIA)]) > len(ND_DIA[int(t_aux/M_DIA)])  ):
-                            FILA_DIA[ int(t/M_DIA) ].append( t_aux - NA_DIA[int(t_aux/M_DIA)][len(ND_DIA[int(t_aux/M_DIA)])] )
                             ND_DIA[int(t_aux/M_DIA)].append(t_aux)
                     for i in range(len(queremandares)):
                         andar = queremandares[i]
@@ -250,7 +246,7 @@ def main():
                             lista.append(andar)
                             myset = set(lista_td)
                             lista_td = list(myset)
-                    temp_viag[elevador] = t_aux + T_PORTA + obter_tempo(andares[elevador], -1) #t_aux engloba tempo para passageiros entrar
+                    tempo_subir[elevador] = t_aux + T_PORTA + obter_tempo(andares[elevador], -1) #t_aux engloba tempo para passageiros entrar
                     n_fila = n_fila - MAX_ELEVADOR
                     lotacao_elevador_subir[elevador][int(t/M_DIA)].append(MAX_ELEVADOR)
                 else: #A FILA ESTA MENOR DO QUE A CAPACIDADE DO ELEVADOR
@@ -261,7 +257,6 @@ def main():
                         i_fila[int(t/M_DIA)].append([t_aux, n_fila-(i+1)])
                         t_aux = t_aux + T_PESSOA
                         if( len(NA_DIA[int(t_aux/M_DIA)]) > len(ND_DIA[int(t_aux/M_DIA)])  ):
-                            FILA_DIA[ int(t/M_DIA) ].append( t_aux - NA_DIA[int(t_aux/M_DIA)][len(ND_DIA[int(t_aux/M_DIA)])] )
                             ND_DIA[int(t_aux/M_DIA)].append(t_aux)
                     for i in range(len(queremandares)):
                         andar = queremandares[i]
@@ -275,15 +270,15 @@ def main():
                             lista.append(andar)
                             myset = set(lista_td)
                             lista_td = list(myset)
-                    temp_viag[elevador] = t_aux + T_PORTA + obter_tempo(andares[elevador], -1)
-                    temp_volta[elevador] = INFINITO
+                    tempo_subir[elevador] = t_aux + T_PORTA + obter_tempo(andares[elevador], -1)
+                    tempo_terreo[elevador] = INFINITO
                     lotacao_elevador_subir[elevador][int(t/M_DIA)].append(n_fila)
                     n_fila = 0
             else: #NAO TEM NINGUEM NA FILA
-                elevador = np.argmin(temp_volta)
+                elevador = np.argmin(tempo_terreo)
                 ctrl_elevador[elevador] = 0
-                t = temp_volta[elevador]
-                temp_volta[elevador] = INFINITO
+                t = tempo_terreo[elevador]
+                tempo_terreo[elevador] = INFINITO
                 for k  in range (N_ANDARES):
                     andares[elevador][k] = 0
                 ###### VERIFICAR SE TEM ALGUEM PRA DESCER
@@ -294,12 +289,12 @@ def main():
                         break
                 if(andar >= 0):
                     atendimento_andares[andar - 1] = elevador + 1
-                    temp_andar[elevador] = t + T_PORTA + andar*T_ANDAR + T_PORTA
+                    tempo_andar[elevador] = t + T_PORTA + andar*T_ANDAR + T_PORTA
                     andares[elevador][andar - 1] += 1  
 ##### CASO 4: UM ELEVADOR CHEGA NUM ANDAR PARA PEGAR PASSAGEIROS #####
-        elif((min(temp_andar) <= tc) and (min(temp_andar) <= min(temp_viag)) and (min(temp_andar) <= min(temp_volta)) and (min(temp_andar) <= td)):
-            t = min(temp_andar)
-            elevador = np.argmin(temp_andar) +1 #VALOR BRUTO DO ELEVADOR
+        elif((min(tempo_andar) <= tc) and (min(tempo_andar) <= min(tempo_subir)) and (min(tempo_andar) <= min(tempo_terreo)) and (min(tempo_andar) <= td)):
+            t = min(tempo_andar)
+            elevador = np.argmin(tempo_andar) +1 #VALOR BRUTO DO ELEVADOR
             andar = -1
             contador = 0
             for i in range(len(atendimento_andares)):
@@ -328,15 +323,15 @@ def main():
                     prox_andar = i + 1 #VALOR BRUTO DO ANDAR
                     break
             if (prox_andar == -1 ): # PROXIMO ANDAR EH O TERREO
-                temp_andar[elevador-1] = INFINITO
-                temp_volta[elevador-1] = t + T_PORTA + andar*T_ANDAR + T_PORTA + ctrl_elevador[elevador-1]*T_PESSOA #fecha a porta e vai ate o terreo
+                tempo_andar[elevador-1] = INFINITO
+                tempo_terreo[elevador-1] = t + T_PORTA + andar*T_ANDAR + T_PORTA + ctrl_elevador[elevador-1]*T_PESSOA #fecha a porta e vai ate o terreo
             else: #PROXIMO ANDAR NAO EH O TERREO
                 dif = andar - prox_andar
-                temp_andar[elevador-1] = t + controle*T_PESSOA + T_PORTA + dif*T_ANDAR + T_PORTA #7seg por andar mais 5seg para abrir a porta ate o maior andar
+                tempo_andar[elevador-1] = t + controle*T_PESSOA + T_PORTA + dif*T_ANDAR + T_PORTA #7seg por andar mais 5seg para abrir a porta ate o maior andar
                 atendimento_andares[prox_andar - 1] = elevador
 
 ##### CASO 5: UMA PESSOA SOLICITA DESCER #####
-        elif((td <= min(temp_viag)) and (td <= min(temp_volta)) and (td <= min(temp_andar)) and (td <= tc)):
+        elif((td <= min(tempo_subir)) and (td <= min(tempo_terreo)) and (td <= min(tempo_andar)) and (td <= tc)):
             t = td
             sobrou = [] #ANDARES QUE NAO SOLICITARAM ATENDIMENTO AINDA NO SISTEMA
             for i in range(len(lista_td)):
@@ -347,7 +342,7 @@ def main():
             if(len(sobrou) > 0):
                 elevadores = []
                 for i in range(N_ELEVADORES):
-                    if(temp_viag[i] == INFINITO and temp_volta[i] == INFINITO and temp_andar[i] == INFINITO ): #ELEVADOR PARADO
+                    if(tempo_subir[i] == INFINITO and tempo_terreo[i] == INFINITO and tempo_andar[i] == INFINITO ): #ELEVADOR PARADO
                         elevadores.append(i)
                 if(len(elevadores) == 0):
                     for i in range(len(sobrou)):
@@ -378,7 +373,7 @@ def main():
                         elevador = auxiliar_elevador[i] +1 #valor bruto
                         andar = auxiliar[i] #valor bruto
                         atendimento_andares[andar-1] = elevador
-                        temp_andar[elevador-1] = t
+                        tempo_andar[elevador-1] = t
 
                 else: #SE NAO TEM ELEVADOR NO ANDAR
                     if(len(elevadores) == 1):
@@ -398,7 +393,7 @@ def main():
                             dif = maior_andar - ultimo_andar
                         elif(maior_andar < ultimo_andar):
                             dif = ultimo_andar - maior_andar
-                        temp_andar[elevador] = t + T_PORTA + dif*T_ANDAR + T_PORTA #7seg por andar mais 5seg para abrir a porta ate o maior andar
+                        tempo_andar[elevador] = t + T_PORTA + dif*T_ANDAR + T_PORTA #7seg por andar mais 5seg para abrir a porta ate o maior andar
                         for i in range(len(sobrou)):
                             andar = sobrou[i]
                             if(sobrou[i] == maior_andar + 1):
@@ -430,7 +425,7 @@ def main():
                                 dif = dif2
                                 elevador_mais_proximo = aux_elevador
                         elevador = elevador_mais_proximo
-                        temp_andar[elevador] = t + T_PORTA + dif*T_ANDAR + T_PORTA #7seg por andar mais 5seg para abrir a porta ate o maior andar
+                        tempo_andar[elevador] = t + T_PORTA + dif*T_ANDAR + T_PORTA #7seg por andar mais 5seg para abrir a porta ate o maior andar
                         for i in range(len(sobrou)):
                             andar = sobrou[i]
                             if(sobrou[i] == maior_andar + 1):
