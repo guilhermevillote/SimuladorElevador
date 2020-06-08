@@ -13,6 +13,14 @@
 ### Saída:
 Dados estatísticos e gráficos referentes às amostras obtidas (média das amostras segue distribuição normal)
 
+### Definições do sistema:
+1. M_DIA: São analisados 360 minutos de operação dos elevadores por dia;
+2. DIA: São pegas 100 amostras diárias por simulação;
+3. T: Tempo total de simulação (36000 minutos);
+4. INFINITO: O valor de infinito eh definido como 99999.9;
+5. T_PORTA: O tempo de abrir ou fechar a porta é de 5 segundos;
+6. T_ANDAR: O tempo do elevador entre dois andares consecutivos é de 7 segundos;
+7. T_PESSOA: O tempo da pessoa embarcar ou desembarcar do elevador é de 2 segundos.
 
 ### Variáveis:
 1. NA_DIA: Controle diário da hora que cada pessoa chegou na fila;
