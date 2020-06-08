@@ -7,8 +7,8 @@
 3. LAMBDA: taxa de chegada de hóspedes, seguindo uma distribuição de Poisson.
 
 ### Amostras:
-Média em um dia de simulação do tempo de espera na fila para subir;
-Média em um dia de simulação do tamanho da fila de espera para subir
+1. Média em um dia de simulação do tempo de espera na fila para subir;
+2. Média em um dia de simulação do tamanho da fila de espera para subir
 
 ### Saída:
 Dados estatísticos e gráficos referentes às amostras obtidas (média das amostras segue distribuição normal)
