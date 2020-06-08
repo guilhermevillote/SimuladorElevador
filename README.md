@@ -34,4 +34,4 @@ Dados estatísticos e gráficos referentes às amostras obtidas (média das amos
 17. t: Controle do tempo da simulação;
 18. mostrador: Controle da passagem dos dias.
 
-Nota: No início de cada dia dentro da simulação, as filas de todos os andares, inclusive do térreo, são zeradas e os elevadores são levados para o térreo, ficando de portas abertas esperando que cheguem hóspedes pelo térreo ou que algum hóspede que já está num andar peça para descer. 
+Nota: No início de cada dia dentro da simulação, as filas de todos os andares, inclusive do térreo, são zeradas e os elevadores são levados para o térreo, ficando de portas abertas esperando que cheguem novos hóspedes pelo térreo ou que algum hóspede, que já esteja num dos andares, solicite descer.
