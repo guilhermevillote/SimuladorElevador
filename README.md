@@ -22,6 +22,9 @@ Dados estatísticos e gráficos referentes às amostras obtidas (média das amos
 6. T_ANDAR: O tempo do elevador entre dois andares consecutivos é de 7 segundos;
 7. T_PESSOA: O tempo da pessoa embarcar ou desembarcar do elevador é de 2 segundos.
 
+### Experimentos
+![alt text](https://github.com/guilhermevillote/SimuladorElevador/blob/master/Experimentos/Configura%C3%A7%C3%B5es.png?raw=true)
+
 ### Variáveis:
 1. NA_DIA: Controle diário da hora que cada pessoa chegou na fila;
 2. ND_DIA: Controle diário da hora que cada pessoa saiu da fila;
