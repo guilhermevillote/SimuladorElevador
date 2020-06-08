@@ -1,8 +1,6 @@
 # Simulador Elevador
 ## Simulador de operação de um grupo de elevadores em um Hotel com 60 andares.
 
-Nota: No início de cada dia dentro da simulação, as filas de todos os andares, inclusive do térreo, são zeradas e os elevadores são levados para o térreo, ficando de portas abertas esperando que cheguem hóspedes pelo térreo ou que algum hóspede que já está num andar peça para descer. 
-
 ### Parâmetros de entrada:
 1. N_ELEVADORES: número de elevadores no sistema
 2. MAX_ELEVADORES: capacidade máxima dos elevadores no sistema
@@ -35,3 +33,5 @@ Dados estatísticos e gráficos referentes às amostras obtida (média das amost
 16. n_fila: Controle do tamanho da fila do térreo;
 17. t: Controle do tempo da simulação;
 18. mostrador: Controle da passagem dos dias.
+
+Nota: No início de cada dia dentro da simulação, as filas de todos os andares, inclusive do térreo, são zeradas e os elevadores são levados para o térreo, ficando de portas abertas esperando que cheguem hóspedes pelo térreo ou que algum hóspede que já está num andar peça para descer. 
